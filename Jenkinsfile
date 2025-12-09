@@ -35,7 +35,12 @@ pipeline {
       steps {
         script {
           def tag = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+
+          // Build image with commit tag
           sh "docker build -t ${DOCKER_IMAGE}:${tag} ."
+
+          // Tag latest (added)
+          sh "docker tag ${DOCKER_IMAGE}:${tag} ${DOCKER_IMAGE}:latest"
         }
       }
     }
@@ -46,7 +51,13 @@ pipeline {
           sh '''
             echo "$DH_PASS" | docker login -u "$DH_USER" --password-stdin
             TAG=$(git rev-parse --short HEAD)
+
+            # Push commit tag
             docker push ${DOCKER_IMAGE}:$TAG
+
+            # Push latest (added)
+            docker push ${DOCKER_IMAGE}:latest
+
             docker logout
           '''
         }
