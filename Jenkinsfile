@@ -31,11 +31,14 @@ pipeline {
       }
     }
 
-    stage('MVN SONARQUBE') {
-      steps {
-        sh 'mvn sonar:sonar'
-      }
+   stage('MVN SONARQUBE') {
+  steps {
+    withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
+      sh 'mvn sonar:sonar -Dsonar.login=$SONAR_TOKEN'
     }
+  }
+}
+
 
     stage('Docker build') {
       steps {
