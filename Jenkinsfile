@@ -29,16 +29,20 @@ pipeline {
       steps {
         sh 'mvn test'
       }
+      post {
+        always {
+          junit 'target/surefire-reports/*.xml'
+        }
+      }
     }
 
-   stage('MVN SONARQUBE') {
-  steps {
-    withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
-      sh 'mvn sonar:sonar -Dsonar.login=$SONAR_TOKEN'
+    stage('MVN SONARQUBE') {
+      steps {
+        withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
+          sh 'mvn sonar:sonar -Dsonar.login=$SONAR_TOKEN'
+        }
+      }
     }
-  }
-}
-
 
     stage('Docker build') {
       steps {
